@@ -6,8 +6,7 @@ const { typeDefs } = require('./schema/type-defs')
 const { resolvers } = require('./schema/resolvers')
 
 // Database connection
-const uri =
-  'mongodb+srv://Examination:Examinationwork.123@cluster0.yhn1r.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+const uri = `${process.env.MONGO_URI}`
 mongoose.connect(
   uri,
   {
