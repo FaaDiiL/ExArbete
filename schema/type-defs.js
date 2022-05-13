@@ -6,20 +6,32 @@ const { gql } = require('apollo-server-express')
 const typeDefs = gql`
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
   # This "Qualification" type defines the queryable fields for every qualification in our data source.
+  """
+   A type that describes the user
+  """
   type Qualification {
+    "Get all qualifications"
     id: ID!
     name: String!
     area: String
     type: String
     access: String
     description: String!
-    eqf: Eqf!
+    eqf: Int!
     language: Language!
-    date_added: String!
+    date_added: String
     date_updated: String
-    # subQualifications(id: [ID!]): [SubQualification!]!
   }
 
+  # The "SubQualification" type defines the queryable fields for every sub qualification in our data source.
+  type SubQualification {
+    id: ID!
+    name: String!
+    description: String!
+    data_added: String!
+    data_updated: String
+    qualification_id: ID!
+  }
   
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each. In this
@@ -27,10 +39,14 @@ const typeDefs = gql`
   type Query {
     getQualifications: [Qualification!]!
     getQualificationById(id: ID!): Qualification
+    getSubQualifications(id:ID!): [SubQualification!]
+    getSubQualificationById(id: ID!): SubQualification
   }
 
   
   type Mutation {
+# __________ Qualifications __________
+
     createQualification(qualification: AddQualificationInput): Qualification
 
     updateQualification(
@@ -39,6 +55,17 @@ const typeDefs = gql`
     ): Qualification
 
     deleteQualificationById( id: ID! ): Qualification
+
+# __________ SubQualifications __________
+    createSubQualification(id:ID!, subQualification: AddSubQualificationInput): SubQualification
+
+    updateSubQualification(
+      id: ID!,
+      subQualification: UpdateSubQualificationInput
+    ): SubQualification
+
+    deleteSubQualificationById( id: ID! ): SubQualification
+
   }
 
   input AddQualificationInput {
@@ -47,7 +74,7 @@ const typeDefs = gql`
     type: String
     access: String
     description: String!
-    eqf: Eqf!
+    eqf: Int!
     language: Language!
     date_added: String
     date_updated: String
@@ -58,26 +85,31 @@ const typeDefs = gql`
     type: String
     access: String
     description: String
-    eqf: Eqf
+    eqf: Int
     language: Language
     date_added: String
     date_updated: String
+  }
+
+  input AddSubQualificationInput {
+    name: String!
+    description: String!
+    data_added: String!
+    data_updated: String
+    qualification_id: ID!
+  }
+  input UpdateSubQualificationInput {
+    name: String
+    description: String
+    data_added: String
+    data_updated: String
+    qualification: ID
   }
 
   enum Language {
     ENGLISH
     SWEDISH
   }
-  enum Eqf {
-    _0
-    _1
-    _2
-    _3
-    _4
-    _5
-    _6
-    _7
-    _8
-  }
+
 `
 module.exports = { typeDefs }
